@@ -2,7 +2,7 @@
 
 This is a simple project that uses the "Arduino Nano" as a sensor and control platform.  By combining multiple sensors together one can gather data over time on ambient temperature, water or ground temperature, relative temperature, humidity, pressure, light (lumens).  With this information, it is possible to control different devices (heater, fans, lights) and optimize the environment for an optimum growth.
 
-
+The information gathered by the "Nano" is then communicated to a computer (targetting the Raspberry Pi II model B) that run a Spring Boot web application that captures and display information to mobile devices.  The intent is to allow one or more "Nano" devices to communicate data over USB or the Network (for longer distances).  
 
 Due to the lack of inexpensive options, this project looks to provide as much capabilities while minimizing costs.
 
@@ -16,7 +16,7 @@ Due to the lack of inexpensive options, this project looks to provide as much ca
 - Red LED $3 for 50 on ebay
 - Mini USB Cable $3 on ebay
 
-Total cost of hardware $52 + shipping charges.  Price could be reduced through bulk buying or by picking alternative parts on [ebay](www.ebay.com) or [DHgate](www.dhgate.com).
+Total cost of hardware $52 + shipping charges.  Price could be reduced through bulk buying or by picking alternative parts on [ebay](www.ebay.com) or [DHgate](www.dhgate.com).  Parts were available at the time of this article.
 
 
 
