@@ -19,9 +19,18 @@ Due to the lack of inexpensive options, this project looks to provide as much ca
 Total cost of hardware $52 + shipping charges.  Price could be reduced through bulk buying or by picking alternative parts on [ebay](www.ebay.com) or [DHgate](www.dhgate.com).  Parts were available at the time of this article.
 
 ###Communication
-The arduino communicates to the server using json.  This allows for flexibility in defining different sensors and switches.
+The arduino communicates to the server every 10 seconds using a json expression with the different values from both the sensors and the swiches.  This allows for flexibility in defining different sensors and switches.
 
 > {"nodeUID":"A199827", "measurements":[{"sensor":"humidity", "value":34.70, "unit":"percent"},{"sensor":"temperature", "value":27.50, "unit":"celcius"},{"sensor":"heat index", "value":26.96, "unit":"celcius"},{"sensor":"temperature probe", "value":26.46, "unit":"celcius"},{"sensor":"pressure", "value":997.54, "unit":"hPa"},{"sensor":"light", "value":142.00, "unit":"lux"},{"sensor":"temperature from pressure sensor", "value":25.32, "unit":"celcius"},{"switch":"switch1", "value":0, "charOn":"y", "charOff":"z"}]}
 
+Communication to the arduino device is done using single character commands as defined in the arduino code.  In the above examples, character "y" and character "z" are used to control (turn on/off) arduino pin 4.  When a request is made, the arduino will respond with a confirmation message and provide again using json the value of the swich that was changed.
 
+> {"nodeUID":"A199827", "measurements":[{"switch":"switch1", "value":1, "charOn":"y", "charOff":"z"}]}
 
+In addition, sending a command followed by a numeric value will cause the switch to be turned on/off for that number of seconds.  For example, sending a "y10" command will cause the arduino pin 4 to be turned on for 10 seconds and then turned off.  In both the on and off command, the instructions will be confirmed with the appropriate json response.  After the initial command, you will receice the following response:
+
+> {"nodeUID":"A199827", "measurements":[{"switch":"switch1", "value":1, "charOn":"y", "charOff":"z"}]}
+
+10 seconds later, you receive:
+
+> {"nodeUID":"A199827", "measurements":[{"switch":"switch1", "value":0, "charOn":"y", "charOff":"z"}]}
