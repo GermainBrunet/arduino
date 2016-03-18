@@ -18,5 +18,30 @@ Due to the lack of inexpensive options, this project looks to provide as much ca
 
 Total cost of hardware $52 + shipping charges.  Price could be reduced through bulk buying or by picking alternative parts on [ebay](www.ebay.com) or [DHgate](www.dhgate.com).  Parts were available at the time of this article.
 
+###Communication
+The arduino communicates to the server using json.
+
+{
+   "nodeUID":"A199827",
+   "measurements":[
+      {
+         "sensor":"humidity",
+         "value":34.70,
+         "unit":"percent"
+      },
+      {
+         "sensor":"temperature",
+         "value":27.50,
+         "unit":"celcius"
+      }
+      ...
+      {
+         "switch":"switch1",
+         "value":0,
+         "charOn":"y",
+         "charOff":"z"
+      }
+   ]
+}
 
 
