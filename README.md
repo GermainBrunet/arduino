@@ -34,3 +34,8 @@ In addition, sending a command followed by a numeric value will cause the switch
 10 seconds later, you receive:
 
 > {"nodeUID":"A199827", "measurements":[{"switch":"switch1", "value":0, "charOn":"y", "charOff":"z"}]}
+
+###Libraries
+The code could not have been written without referencing libraries provided by [adafruit](www.adafruit.com).  Thank you guys for your great examples!  A copy of all the libraries used for the examples have been provided in the lib folder.
+
+
