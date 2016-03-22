@@ -93,13 +93,13 @@ DHT dht(DHTPIN, DHTTYPE);
     Output
 */
 /**************************************************************************/
-boolean switch1     = false;
-String  switch1name = "switch1";
-char    switch1on   = 121; // y
-char    switch1off  = 122; // z
-int     switch1pin  = 4;   // Arduino Board Digital Pin Number
-int     switch1Cycles      = 0;
-char    switch1CycleChar   = 0;
+boolean toggle1     = false;
+String  toggle1name = "toggle1";
+char    toggle1on   = 121; // y
+char    toggle1off  = 122; // z
+int     toggle1pin  = 4;   // Arduino Board Digital Pin Number
+int     toggle1Cycles      = 0;
+char    toggle1CycleChar   = 0;
 
 
 /**************************************************************************/
@@ -153,7 +153,7 @@ void setup(void)
   configureLightSensor();
 
   /* Setup output pin */
-  pinMode(switch1pin, OUTPUT);
+  pinMode(toggle1pin, OUTPUT);
 
 }
 
@@ -179,41 +179,43 @@ void loop(void)
     // Provide time delay functionality.
     if (recv.length() > 1) {
         String time = recv.substring(1, recv.length()); // Get the trailing numbers.
-        switch1Cycles = time.toInt() * 100; // 100 multiplier gives us about 1 second units.
-        switch1CycleChar = recv.charAt(0);  // Keep the cycle character in memory for switch purposes.
+        toggle1Cycles = time.toInt() * 100; // 100 multiplier gives us about 1 second units.
+        toggle1CycleChar = recv.charAt(0);  // Keep the cycle character in memory for toggle purposes.
     }
 
-    // Turn on switch variable
-    // - when the correct character is received and the switch is off, or
+    // Turn on toggle variable
+    // - when the correct character is received and the toggle is off, or
     // - when the wrong character is received and the cycle counter is 1.
-    if ((recv.charAt(0) == switch1on && switch1 == false) 
-      || (switch1Cycles == 1 && switch1CycleChar == switch1off)) {
-      switch1 = true;
+    if ((recv.charAt(0) == toggle1on && toggle1 == false) 
+      || (toggle1Cycles == 1 && toggle1CycleChar == toggle1off)) {
+      toggle1 = true;
       displayHeader(ARDUINO_NODE_NUMBER);
-      displaySwitchDetails(switch1, switch1name, switch1on, switch1off);
+      displayToggles();
+      displayToggleDetails(toggle1, toggle1name, toggle1on, toggle1off);
       displayFooter();
     } 
-    // Turn off switch variable
-    // - when the correct character is received and the switch is off, or
+    // Turn off toggle variable
+    // - when the correct character is received and the toggle is off, or
     // - when the wrong character is received and the cycle counter is 1.
-    if ((recv.charAt(0) == switch1off && switch1 == true) 
-      || (switch1Cycles == 1 && switch1CycleChar == switch1on)) {
-      switch1 = false;
+    if ((recv.charAt(0) == toggle1off && toggle1 == true) 
+      || (toggle1Cycles == 1 && toggle1CycleChar == toggle1on)) {
+      toggle1 = false;
       displayHeader(ARDUINO_NODE_NUMBER);
-      displaySwitchDetails(switch1, switch1name, switch1on, switch1off);
+      displayToggles();
+      displayToggleDetails(toggle1, toggle1name, toggle1on, toggle1off);
       displayFooter();
     }
 
     // Actual board pin setting.
-    if (switch1) {
-      digitalWrite(switch1pin, HIGH);
+    if (toggle1) {
+      digitalWrite(toggle1pin, HIGH);
     } else {
-      digitalWrite(switch1pin, LOW);
+      digitalWrite(toggle1pin, LOW);
     }
 
     // Reduce the cycle by one turn.
-    if (switch1Cycles > 0) {
-      switch1Cycles--;
+    if (toggle1Cycles > 0) {
+      toggle1Cycles--;
     }
 
     // TODO - try different cycle times to accelerate response time.
@@ -263,6 +265,7 @@ void loop(void)
 
   // Print the output to the serial port.
   displayHeader(ARDUINO_NODE_NUMBER);
+  displaySensors();
   if (!isnan(h)) {
     Serial.print("{\"sensor\":\"humidity\", ");
     Serial.print("\"value\":");
@@ -310,11 +313,15 @@ void loop(void)
     Serial.print("\"value\":");
     Serial.print(pressureSensorTemp);
     Serial.print(", ");
-    Serial.print("\"unit\":\"celcius\"},");
+    Serial.print("\"unit\":\"celcius\"}");
   }
+  displayListEnd();
 
-  // Switch 1
-  displaySwitchDetails(switch1, switch1name, switch1on, switch1off);
+  // Display togglees.
+  displayToggles();
+
+  // toggle 1
+  displayToggleDetails(toggle1, toggle1name, toggle1on, toggle1off);
 
   // Footer
   displayFooter();
@@ -406,19 +413,23 @@ float thermisterCalc() {
 
 /**************************************************************************/
 /*
-    Displays switch information.  Done as main loop and on state change.
+    Displays toggle information.  Done as main loop and on state change.
 */
 /**************************************************************************/
-void displaySwitchDetails(boolean switchValue, String switchName, char charOn, char charOff)
+void displayToggleDetails(boolean toggleValue, String toggleName, char charOn, char charOff)
 {
-  // Switch 1
-  Serial.print("{\"switch\":\"");
-  Serial.print(switchName);
+  // Toggle 1
+  Serial.print("{\"name\":\"");
+  Serial.print(toggleName);
   Serial.print("\", ");
   Serial.print("\"value\":");
-  Serial.print(switchValue);
+  Serial.print(toggleValue);
   Serial.print(", ");
-  Serial.print("\"charOn\":\"y\", \"charOff\":\"z\"}");
+  Serial.print("\"charOn\":\"");
+  Serial.print(charOn);
+  Serial.print("\", \"charOff\":\"");
+  Serial.print(charOff);
+  Serial.print("\"}");
 }
 
 /**************************************************************************/
@@ -431,8 +442,24 @@ void displayHeader(String arduinoNodeNumber)
   Serial.print("{");
   Serial.print("\"nodeUID\":\"");
   Serial.print(arduinoNodeNumber);
-  Serial.print("\", \"measurements\":[");
+  Serial.print("\"");
 }
+
+void displaySensors()
+{
+  Serial.print(", \"sensors\":[");
+}
+
+void displayToggles()
+{
+  Serial.print(", \"toggles\":[");
+}
+
+void displayListEnd() 
+{
+  Serial.print("]");
+}
+
 /**************************************************************************/
 /*
     Displays footer information.  
